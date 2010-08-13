@@ -1,0 +1,190 @@
+	 Gustav Tiger <tiggex@gmail.com>
+Spelidé!
+5 messages
+Gustav Tiger <tiggex@gmail.com>	 12 August 2010 01:17
+To: Henrik Steen <reggna@gmail.com>
+Game idea is rather fussy now but I imagine something like TIM [3] but instead
+of physics we use logic, ones and zeroes. By connecting components with wires
+from outputs to inputs (again like TIM) one could create cool gadgets with
+lower level components.
+
+Something simple as a button, connected with a timer and that connected with
+a lamp makes gadget that lights up when pressing the button, and then stays on
+for a period of time.
+
+A crystal together with logics, couple of lights could be made into a 7seg
+clock.
+
+The goal could be that with limited components create a resulting product
+that does something. More ideas? [4]?
+
+Gadget:
+================================================================================
+
+Has input and output connection. Each output should be connected to another
+gadgets input. Empty connections are undefined? Examples can be seen in [1].
+
+ * update()     - Update the component. This can be used to build counters,
+                 delays and other fun things.
+ * calculate()  - Outputs set the inputs of other components according to the
+                 rules of the gadget.
+ * inputs       - Set of input connections.
+ * outputs      - Set of output connections.
+
+This is connected with a visual appearance. Connections should be visible and
+the user should be able to connect the inputs to the outputs with the mouse.
+The gadgets should be able to control or affect in more ways then the
+connections.
+
+Perhaps be able to assemble new components by blackboxing new components. This
+way one could start with very basic components.
+
+Example components: Or, And, Xor, Alarm, Switch (toggle), Button (hold), Light,
+                   Delay (normal, high, low), 7 seg (made from lights), GPS,
+                   Emitter, Memory, Crystal (1/0 interval), etc.
+
+Should think of some way to make more advanced stuff such as keypads, might very
+well be possible with this system, but perhaps a way to make it easier to use?
+See [2] for many examples.
+
+
+Calculation:
+================================================================================
+
+* Update
+
+calcualte_list = all gadgets
+
+until calculate_list is empty:
+ list_size = size(calculate_list)
+ foreach gadget in calulate_list:
+   if gadget has all input filled (or no inputs):
+     run calculate()
+     remove gadget from gadget_list
+   else:
+     continue
+
+ if list_size == size(calculate_list):
+   error out or abort?
+
+================================================================================
+
+[1] http://forums.introversion.co.uk/introversion/viewtopic.php?t=2036
+[2] http://wiki.garrysmod.com/?title=Wire_Addon
+[3] http://en.wikipedia.org/wiki/The_Incredible_Machine
+[4] http://en.wikipedia.org/wiki/Rube_Goldberg_machine
+reggna <reggna@gmail.com>	 12 August 2010 12:09
+To: Gustav Tiger <tiggex@gmail.com>
+Hi, Gustav!
+
+First of all, I would like to start a glossary to avoid confusion. This is how I understand it after reading your mail:
+a component is a small part with input(s) and/or output(s)
+a gadget is a gathering of two or more components
+Also, the idea with the crystal is not crystal clear, could you try to elaborate?
+
+
+And now to my initial thoughts about the idea:
+
+I've never played TIM, but I think I'm able to grasp the general idea.
+One thing that feels important before starting development is to think about "What makes this idea unique?".
+
+One thing that could make this project stand out could be to have good and easy-to-use map and component editors. As I mentioned I'm not previously familiar with TIM or any other similar games currently out on the market, but if the community would be provided with good tools I could see a future for the project.
+
+Regards,
+Henrik Steen,
+Gothenburg Sweden, 12th Aug 2010
+[Quoted text hidden]
+Gustav Tiger <tiggex@gmail.com>	 12 August 2010 13:02
+To: reggna <reggna@gmail.com>
+Hi Reggna,
+
+Mostly its the general feeling of TIM [1], that I want to capture. Weird,
+odd and fun solutions to different problems that might also be quite
+weird. However I'm not quite sure how to fit that into the building
+of components.
+
+I'm not sure if I made a difference between component and gadget. If
+I did it was unintentional. But somewhere there need to be a difference,
+even if it doesn't need to be in wording. The basic components need
+to be coded in python but higher lever components/gadgets should be
+built with lower lever gadgets/components. Is the distinction needed
+by the user? I don't think so, but we could call them base component,
+and component or something.
+
+To make a game of this I think one might need a real life setting,
+perhaps something like small people walking, flipping switches, activating
+beams, pressure plates, get killed by explosives, etc. Walls, impenetrable
+walls (can't run wires through them)... Just some ideas. I think it would be
+fun just to be able to build cool things with basic components, perhaps
+start there and go from there?
+
+The crystal was a reference to [2]. The idea was that it should change
+between on/off 1/0 on every n updates, i.e. a square wave. I should have
+just put oscillator instead I guess.
+
+And an editor would be nice yes. So a level might be:
+
+* List of components you can use
+ - What components
+ - Amounts
+* Wire limit
+* Static components on the playing field
+ - Conditions on the static components, light the light, blow up this, etc
+* General conditions
+ - Kill 5 people
+ - Whatnot
+* etc..
+
+Perhaps the levels themselves should be built using gadget. In fact
+this would be *awesome* I think. We could just have win components.
+When all win components is activated, we are good to go. There could
+also be loose component, that when activated fails you.
+
+So in the level where one should light the light, we could just have a
+light sensor attached to the win condition.
+
+-----
+
+Also, an editor for components should be in the game, and part of the
+real game. I.e. to assemble bigger components of lots of small components.
+
+
+[1] http://www.youtube.com/watch?v=09FnpoZ7x64
+[2] http://en.wikipedia.org/wiki/Crystal_oscillator
+[Quoted text hidden]
+reggna <reggna@gmail.com>	 12 August 2010 13:53
+To: Gustav Tiger <tiggex@gmail.com>
+As long as everybody is on the same page the actual wording doesn't matter. We might not even need a word for the larger gadgets, a "collection of components" could do fine.
+
+You mention the usage of Python withing the process of building components, is the idea to build the rest of the application in Python as well?
+Have you begun considering different graphics libraries? If so, what are your thoughts on that?
+
+The idea with letting small people walk around and interact with the world could actually be quite fun. Then stuff as walls, trampolines, &c. could appear as component usable by the player. There could also be different kinds of people: old people walking slowly, fast young people on skateboards, light frightened zombies that only turn on (not off) light switches, gnomes that walk under large object, &c.
+
+Ah, an oscillator. Now I get it. :-)
+
+Do you think this game could be suitable for a multi-player part?
+Either co-operating to find the best solution, with the players having access to different component than each other, or as a PvP where one player is working against the other to stop him from completing the task.
+Might be hard if the players is unable to manipulate the game board after the building part is over. Maybe the user could have some other actions available when the gravity and people movement has begun?
+[Quoted text hidden]
+Gustav Tiger <tiggex@gmail.com>	 12 August 2010 14:32
+To: reggna <reggna@gmail.com>
+All python yes, perhaps together with [1] or [2]. Preferebly [1] since its built
+on the power of SDL -- So should be quite familiar.  I'm thinking 2d view
+from above here, just to clarify. Python should be good enough for this,
+and should make it quite a bit more easy to write.
+
+Yes, yes, I like all the ideas. I would suggest starting with the component
+stuff however, but keeping the other things in mind. When there is a working
+proof of concept it can be expanded to include peoples and walls and then
+make another proof of concept.
+
+As for multi-player, it might work yes. Especially if you could use your
+gadgets on each other, sort of, tower defence style even perhaps? But
+that might be to reach. I would suggest single player only, at least to
+start with.
+
+[1] http://www.pygame.org/
+[2] http://www.pyglet.org/
+[Quoted text hidden]
+
