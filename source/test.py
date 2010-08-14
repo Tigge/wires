@@ -1,23 +1,23 @@
 import sys
-import components.Source
-import components.AndComponent
-import components.Light
+import components.logiccomponent
+import components.lightcomponent
+import components.wireio
 
 def main():
     
     
-    s1 = components.Source.Source(True)
-    s2 = components.Source.Source(True)
+    s1 = components.logiccomponent.Source(True)
+    s2 = components.logiccomponent.Source(True)
     
-    ac = components.AndComponent.AndComponent()
+    ac = components.logiccomponent.AndComponent()
     
-    light = components.Light.Light()
+    light = components.lightcomponent.Light()
     
     s1.outputs[0].connect(ac.inputs[0])
     s2.outputs[0].connect(ac.inputs[1])
     ac.outputs[0].connect(light.inputs[0])
     
-    components.Input.Input.readylist = {}
+    components.baseio.Input.readylist = {}
     gadgetlist = [s1, s2, ac, light]
 
     while len(gadgetlist) > 0:
