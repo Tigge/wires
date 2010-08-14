@@ -1,1 +1,2 @@
-__all__ = ["Source", "Input", "Light"]
+__all__ = ["basecomponent", "baseio", "wireio", "lightio", "logiccomponent", \
+           "lightcomponent"]
