@@ -1,4 +1,5 @@
 import pygame, pygame.gfxdraw
+import base
 
 class ComponentGUI:
 

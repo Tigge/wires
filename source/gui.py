@@ -1,4 +1,4 @@
-import sys, pygame, pygame.gfxdraw
+import sys, pygame, pygame.gfxdraw, pygame.locals
 
 import components.logiccomponent
 import components.lightcomponent
@@ -36,11 +36,14 @@ guicomps = [gui.component.ComponentGUI(s1), gui.component.ComponentGUI(s2), \
 
 font = pygame.font.Font(pygame.font.get_default_font(), 16)
 fps  = pygame.time.Clock()
+gui  = gui.base.GUI(gui.base.Component())
 while 1:
     fps.tick()
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
-
+        else: 
+            print event
+            gui.update(event)
     screen.fill(black)
 
     fs = font.render("FPS: " + str(int(fps.get_fps())), True, (255, 255, 255))
@@ -48,6 +51,8 @@ while 1:
 
     for i, guicomp in enumerate(guicomps):
         screen.blit(guicomp._surface, (50 + 100 * i, 100))
+    
+    gui.paint(screen)
     
     pygame.display.flip()
 
