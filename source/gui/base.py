@@ -1,5 +1,5 @@
 import pygame, pygame.gfxdraw, pygame.locals
-
+import event
 
 def isInside(pos, dim, test):
     if test[0] >= pos[0] and test[0] <= pos[0] + dim[0] \
@@ -10,33 +10,32 @@ def isInside(pos, dim, test):
 class GUI:
     
     def __init__(self, base):
-        self._base = base
+        self._base   = base
+        self._active = None
         pass
     
     def setBase(self, base):
         self._base = base
     
-    def update(self, event):
+    def update(self, ev):
         if self._base == None:
             return
-        if event.type in [pygame.locals.MOUSEBUTTONDOWN, pygame.locals.MOUSEBUTTONUP]:
-            pos  = event.pos
-            but  = event.button
+        if ev.type == pygame.locals.MOUSEBUTTONDOWN:
+            comp = self._base.getComponentAt(ev.pos)
+            print comp
+            if isinstance(comp, event.MouseListener):
+                self._active = comp
+                self._active.mousePressed(ev.pos)
+        elif ev.type == pygame.locals.MOUSEBUTTONUP:
+            if isinstance(self._active, event.MouseListener):
+                self._active.mouseReleased(ev.pos)
+                self._active.mouseClicked(ev.pos)
+        elif ev.type == pygame.locals.MOUSEMOTION:
+            pos  = ev.pos
+            rel  = ev.rel
+            buts = ev.buttons
             comp = self._base.getComponentAt(pos)
-            
-            if isinstance(comp, MouseListener):
-                if event.type == pygame.locals.MOUSEBUTTONDOWN:
-                    comp.mousePressed(pos)
-                else:
-                    comp.mouseReleased(pos)
-                    comp.mouseClicked(pos)
-            #print event.dict, pos, comp
-        elif event.type == pygame.locals.MOUSEMOTION:
-            pos  = event.pos
-            rel  = event.rel
-            buts = event.buttons
-            comp = self._base.getComponentAt(pos)
-            if isinstance(comp, MouseListener):
+            if isinstance(comp, event.MouseListener):
                 comp.mouseMoved(pos, rel)
         else:
             #print event.type
@@ -64,52 +63,3 @@ class Component:
         else:
             return None
 
-class Container(Component):
-
-    def __init__(self):
-        Component.__init__(self)
-        
-    def add(self, component):
-        pass
-
-class MouseListener:
-    def mouseClicked(self, pos):
-        pass
-    def mousePressed(self, pos):
-        pass
-    def mouseReleased(self, pos):
-        pass
-    def mouseMoved(self, pos, rel):
-        pass
-
-class KeyListener:
-    def keyPressed(self, pos):
-        pass
-    def keyReleased(self, pos):
-        pass
-    def keyTyped(self, pos):
-        pass
-
-
-class MovableComponent(Component, MouseListener):
-    
-    _color_normal = (255, 255, 255)
-    _color_press  = (200, 255, 200)
-    
-    def __init__(self):
-        Component.__init__(self)
-        self._color = MovableComponent._color_normal
-    
-    def paint(self, surface):
-        rect = pygame.Rect(self._position, self._dimension)
-        pygame.gfxdraw.box(surface, rect, self._color)
-        pygame.gfxdraw.rectangle(surface, rect, (60, 60, 60))
-    
-    def mousePressed(self, pos):
-        self._color = MovableComponent._color_press
-        
-    def mouseReleased(self, pos):
-        self._color = MovableComponent._color_normal
-    def mouseMoved(self, pos, rel):
-        if self._color == MovableComponent._color_press:
-            self._position = (self._position[0] + rel[0], self._position[1] + rel[1])

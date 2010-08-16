@@ -2,8 +2,7 @@ import sys, pygame, pygame.gfxdraw, pygame.locals
 
 import components.logiccomponent
 import components.lightcomponent
-import gui.base
-import gui.component
+import gui.base, gui.component, gui.container
             
 
 pygame.init()
@@ -31,12 +30,16 @@ ac.outputs[0].connect(light.inputs[0])
 comps = [s1, s2, ac, light]
 
 guicomps = [gui.component.ComponentGUI(s1), gui.component.ComponentGUI(s2), \
-            gui.component.ComponentGUI(ac), gui.component.ComponentGUI(light)]
+            gui.component.ComponentGUI(ac), gui.component.ComponentGUI(light), \
+            gui.component.MovableComponent()]
 
 
 font = pygame.font.Font(pygame.font.get_default_font(), 16)
 fps  = pygame.time.Clock()
-gui  = gui.base.GUI(gui.base.MovableComponent())
+container = gui.container.Container()
+for gc in guicomps:
+    container.add(gc)
+gui  = gui.base.GUI(container)
 while 1:
     fps.tick()
     for event in pygame.event.get():
@@ -50,7 +53,7 @@ while 1:
     screen.blit(fs, (10, 10))
 
     for i, guicomp in enumerate(guicomps):
-        screen.blit(guicomp._surface, (50 + 100 * i, 100))
+        guicomp.paint(screen)
     
     gui.paint(screen)
     
