@@ -19,13 +19,28 @@ class GUI:
     def update(self, event):
         if self._base == None:
             return
-        if event.type in [pygame.locals.MOUSEBUTTONDOWN,
-                pygame.locals.MOUSEBUTTONUP, pygame.locals.MOUSEMOTION]:
+        if event.type in [pygame.locals.MOUSEBUTTONDOWN, pygame.locals.MOUSEBUTTONUP]:
             pos  = event.pos
+            but  = event.button
             comp = self._base.getComponentAt(pos)
-            print event.dict, pos, comp
-        print event.type
-        pass
+            
+            if isinstance(comp, MouseListener):
+                if event.type == pygame.locals.MOUSEBUTTONDOWN:
+                    comp.mousePressed(pos)
+                else:
+                    comp.mouseReleased(pos)
+                    comp.mouseClicked(pos)
+            #print event.dict, pos, comp
+        elif event.type == pygame.locals.MOUSEMOTION:
+            pos  = event.pos
+            rel  = event.rel
+            buts = event.buttons
+            comp = self._base.getComponentAt(pos)
+            if isinstance(comp, MouseListener):
+                comp.mouseMoved(pos, rel)
+        else:
+            #print event.type
+            pass
     
     def paint(self, surface):
         self._base.paint(surface)
@@ -64,7 +79,7 @@ class MouseListener:
         pass
     def mouseReleased(self, pos):
         pass
-    def mouseMoved(self, pos):
+    def mouseMoved(self, pos, rel):
         pass
 
 class KeyListener:
@@ -78,8 +93,23 @@ class KeyListener:
 
 class MovableComponent(Component, MouseListener):
     
+    _color_normal = (255, 255, 255)
+    _color_press  = (200, 255, 200)
+    
     def __init__(self):
         Component.__init__(self)
-        MouseListener.__init__(self)
+        self._color = MovableComponent._color_normal
+    
+    def paint(self, surface):
+        rect = pygame.Rect(self._position, self._dimension)
+        pygame.gfxdraw.box(surface, rect, self._color)
+        pygame.gfxdraw.rectangle(surface, rect, (60, 60, 60))
+    
+    def mousePressed(self, pos):
+        self._color = MovableComponent._color_press
         
-    #def 
+    def mouseReleased(self, pos):
+        self._color = MovableComponent._color_normal
+    def mouseMoved(self, pos, rel):
+        if self._color == MovableComponent._color_press:
+            self._position = (self._position[0] + rel[0], self._position[1] + rel[1])

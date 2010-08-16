@@ -36,13 +36,13 @@ guicomps = [gui.component.ComponentGUI(s1), gui.component.ComponentGUI(s2), \
 
 font = pygame.font.Font(pygame.font.get_default_font(), 16)
 fps  = pygame.time.Clock()
-gui  = gui.base.GUI(gui.base.Component())
+gui  = gui.base.GUI(gui.base.MovableComponent())
 while 1:
     fps.tick()
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
         else: 
-            print event
+            #print event
             gui.update(event)
     screen.fill(black)
 
