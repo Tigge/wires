@@ -8,7 +8,11 @@ class Container(base.Component):
         
     def add(self, comp):
         self._components.append(comp)
-        
+        comp._parent = self
+    
+    def layout(self):
+        pass
+    
     def paint(self, surface):
         for comp in reversed(self._components):
             comp.paint(surface)

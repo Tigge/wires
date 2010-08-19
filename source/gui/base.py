@@ -22,7 +22,6 @@ class GUI:
             return
         if ev.type == pygame.locals.MOUSEBUTTONDOWN:
             comp = self._base.getComponentAt(ev.pos)
-            print comp
             if isinstance(comp, event.MouseListener):
                 self._active = comp
                 self._active.mousePressed(ev.pos)
@@ -33,10 +32,18 @@ class GUI:
         elif ev.type == pygame.locals.MOUSEMOTION:
             pos  = ev.pos
             rel  = ev.rel
-            buts = ev.buttons
-            comp = self._base.getComponentAt(pos)
-            if isinstance(comp, event.MouseListener):
-                comp.mouseMoved(pos, rel)
+            bl, bm, br = ev.buttons
+            if bl + bm + br > 0:
+                if isinstance(self._active, event.MouseListener):
+                    self._active.mouseMoved(pos, rel)
+        elif isinstance(self._active, event.KeyListener):
+            if ev.type == pygame.locals.KEYDOWN:
+                self._active.keyPressed(ev.unicode)
+            elif ev.type == pygame.locals.KEYUP:
+                self._active.keyReleased(ev.key)
+                self._active.keyTyped(ev.key)
+            else:
+                print ev 
         else:
             #print event.type
             pass
@@ -51,6 +58,7 @@ class Component:
         self._enabled   = True
         self._position  = (0 , 0)
         self._dimension = (100, 100)
+        self._parent    = None
         
     def paint(self, surface):
         rect = pygame.Rect(self._position, self._dimension)
