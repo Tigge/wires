@@ -10,8 +10,9 @@ class Output:
         self._inputs = []
     
     def connect(self, inpt):
-        if inpt not in self._inputs:
+        if inpt not in self._inputs and inpt._output == None:
             self._inputs.append(inpt)
+            inpt._output = self
             print "connected", self, "to", inpt
         else:
             raise Exception("Input " + str(inpt) + " already in use")
@@ -29,6 +30,7 @@ class Input:
     readylist = {}
 
     def __init__(self):
+        self._output = None
         pass
         
     def recieve(self, value):

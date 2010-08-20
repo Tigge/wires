@@ -2,25 +2,63 @@ import pygame, pygame.gfxdraw
 import components.baseio, components.basecomponent
 import gui.base, gui.event, gui.container
 
-class InputGUI(gui.base.Component):
-    def __init__(self, inpt):
-        gui.base.Component.__init__(self)
-        self._input     = inpt
-        self._dimension = (10, 10)
-        
-    def paint(self, surface):
-        rect = pygame.Rect(self._position, self._dimension)
-        pygame.gfxdraw.box(surface, rect, (255, 0, 0))
 
-class OutputGUI(gui.base.Component):
-    def __init__(self, outp):
+class ConnectionGUI(gui.base.Component, gui.event.MouseListener):
+    def __init__(self, color):
         gui.base.Component.__init__(self)
-        self._output = outp
         self._dimension = (10, 10)
+        self._mousedown = False
+        self._color     = color
     
     def paint(self, surface):
         rect = pygame.Rect(self._position, self._dimension)
-        pygame.gfxdraw.box(surface, rect, (0, 255, 0))
+        pygame.gfxdraw.box(surface, rect, self._color)
+        
+        if self._mousedown:
+            fx, fy = self._position
+            tx, ty = self._wirepos
+            pygame.gfxdraw.line(surface, fx, fy, tx, ty, (255, 255, 255))
+    def wiredrop(self, comp):
+        print "wiredrop", comp
+        pass
+    
+    def wiredrag(self, pos):
+        print "wiredrag", pos
+        pass
+    
+    def wiredroplegal(self, comp):
+        return True
+    
+    def mouseMoved(self, pos, rel):
+        if self._mousedown:
+            self._wirepos = pos
+            self.wiredrag(pos)
+    def mousePressed(self, pos):
+        self._mousedown = True
+        self._wirepos   = pos
+    def mouseReleased(self, pos):
+        self._mousedown = False
+        comp = self._parent._parent.getComponentAt(pos)
+        if self.wiredroplegal(comp):
+            self.wiredrop(comp)
+
+class InputGUI(ConnectionGUI):
+    def __init__(self, inpt):
+        ConnectionGUI.__init__(self, (255, 0, 0))
+        self._input     = inpt
+    def wiredrop(self, comp):
+        comp._output.connect(self._input)
+    def wiredroplegal(self, comp):
+        return isinstance(comp, OutputGUI)
+
+class OutputGUI(ConnectionGUI):
+    def __init__(self, outp):
+        ConnectionGUI.__init__(self, (0, 255, 0))
+        self._output = outp
+    def wiredrop(self, comp):
+        self._output.connect(comp._input)
+    def wiredroplegal(self, comp):
+        return isinstance(comp, InputGUI)
         
         #if self._connection:
         #    pygame.gfxdraw.line(surface, self._position[0], \
@@ -69,6 +107,8 @@ class ComponentGUI(gui.container.Container, gui.event.MouseListener):
         res = gui.container.Container.getComponentAt(self, point)
         if res == None:
             return gui.base.Component.getComponentAt(self, point)
+        else:
+          return res
     
     def paintwires(self, surface):
         for i, outp in enumerate(self._component.outputs):
