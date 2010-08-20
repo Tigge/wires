@@ -22,6 +22,7 @@ class GUI:
             return
         if ev.type == pygame.locals.MOUSEBUTTONDOWN:
             comp = self._base.getComponentAt(ev.pos)
+            print comp
             if isinstance(comp, event.MouseListener):
                 self._active = comp
                 self._active.mousePressed(ev.pos)

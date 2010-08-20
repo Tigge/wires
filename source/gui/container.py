@@ -9,6 +9,7 @@ class Container(base.Component):
     def add(self, comp):
         self._components.append(comp)
         comp._parent = self
+        self.layout()
     
     def layout(self):
         pass

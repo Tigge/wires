@@ -2,7 +2,7 @@ import sys, pygame, pygame.gfxdraw, pygame.locals
 
 import components.logiccomponent
 import components.lightcomponent
-import gui.base, gui.component, gui.container
+import gui.base, gui.component, gui.container, guicomponent
             
 
 pygame.init()
@@ -29,8 +29,8 @@ ac.outputs[0].connect(light.inputs[0])
 
 comps = [s1, s2, ac, light]
 
-guicomps = [gui.component.ComponentGUI(s1), gui.component.ComponentGUI(s2), \
-            gui.component.ComponentGUI(ac), gui.component.ComponentGUI(light), \
+guicomps = [guicomponent.ComponentGUI(s1), guicomponent.ComponentGUI(s2), \
+            guicomponent.ComponentGUI(ac), guicomponent.ComponentGUI(light), \
             gui.component.MovableComponent()]
 
 
