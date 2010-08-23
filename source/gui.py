@@ -7,12 +7,18 @@ import gui.base, gui.component, gui.container, guicomponent
 
 pygame.init()
 
-size = width, height = 640, 480
+size = width, height = 800, 600
 black = 0, 0, 0
 
 icon = pygame.image.load("resources/icon.png")
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Wirez")
+
+background      = pygame.image.load("resources/background.png")
+sidepanel       = pygame.image.load("resources/sidepanel.png")
+left_fold_arrow = pygame.image.load("resources/left_fold_arrow.png")
+toppanel        = pygame.image.load("resources/toppanel.png")
+
 
 screen = pygame.display.set_mode(size)
 
@@ -48,6 +54,11 @@ while 1:
             #print event
             gui.update(event)
     screen.fill(black)
+    screen.blit(background, (0, 0))
+    screen.blit(toppanel, (0,0))
+    screen.blit(sidepanel, (575, 0))
+    screen.blit(left_fold_arrow, (580, 250))
+
 
     fs = font.render("FPS: " + str(int(fps.get_fps())), True, (255, 255, 255))
     screen.blit(fs, (10, 10))
