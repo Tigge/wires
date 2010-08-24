@@ -1,18 +1,18 @@
 
 class MouseListener:
-    def mouseClicked(self, pos):
+    def mouse_clicked(self, pos):
         pass
-    def mousePressed(self, pos):
+    def mouse_pressed(self, pos):
         pass
-    def mouseReleased(self, pos):
+    def mouse_released(self, pos):
         pass
-    def mouseMoved(self, pos, rel):
+    def mouse_moved(self, pos, rel):
         pass
 
 class KeyListener:
-    def keyPressed(self, pos):
+    def key_pressed(self, pos):
         pass
-    def keyReleased(self, pos):
+    def key_released(self, pos):
         pass
-    def keyTyped(self, pos):
+    def key_typed(self, pos):
         pass

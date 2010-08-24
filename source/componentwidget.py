@@ -1,11 +1,10 @@
 import pygame, pygame.gfxdraw
 import components.baseio, components.basecomponent
-import gui.base, gui.event, gui.container
+import gui.widget, gui.event, gui.container
 
-
-class ConnectionGUI(gui.base.Component, gui.event.MouseListener):
+class ConnectionWidget(gui.widget.Widget, gui.event.MouseListener):
     def __init__(self, color):
-        gui.base.Component.__init__(self)
+        gui.widget.Widget.__init__(self)
         self._dimension = (10, 10)
         self._mousedown = False
         self._color     = color
@@ -42,29 +41,29 @@ class ConnectionGUI(gui.base.Component, gui.event.MouseListener):
         if self.wiredroplegal(comp):
             self.wiredrop(comp)
 
-class InputGUI(ConnectionGUI):
+class InputWidget(ConnectionWidget):
     def __init__(self, inpt):
-        ConnectionGUI.__init__(self, (255, 0, 0))
+        ConnectionWidget.__init__(self, (255, 0, 0))
         self._input     = inpt
     def wiredrop(self, comp):
         comp._output.connect(self._input)
     def wiredroplegal(self, comp):
-        return isinstance(comp, OutputGUI)
+        return isinstance(comp, OutputWidgetI)
 
-class OutputGUI(ConnectionGUI):
+class OutputWidget(ConnectionWidget):
     def __init__(self, outp):
-        ConnectionGUI.__init__(self, (0, 255, 0))
+        ConnectionWidget.__init__(self, (0, 255, 0))
         self._output = outp
     def wiredrop(self, comp):
         self._output.connect(comp._input)
     def wiredroplegal(self, comp):
-        return isinstance(comp, InputGUI)
+        return isinstance(comp, InputWidget)
         
         #if self._connection:
         #    pygame.gfxdraw.line(surface, self._position[0], \
         #                        self._position[1], self._connectionpos[0], \
         #                        self._connectionpos[1], (255, 255, 255))
-class ComponentGUI(gui.container.Container, gui.event.MouseListener):
+class ComponentWidget(gui.container.Container, gui.event.MouseListener):
 
     _mapping      = {}
 
@@ -77,56 +76,64 @@ class ComponentGUI(gui.container.Container, gui.event.MouseListener):
         self._component = comp
         self._dragging  = False        
         for inpt in comp.inputs:
-            ComponentGUI._mapping[inpt] = self
-            self.add(InputGUI(inpt))
+            ComponentWidget._mapping[inpt] = self
+            self.add(InputWidget(inpt))
         for outp in comp.outputs:
-            self.add(OutputGUI(outp))
+            self.add(OutputWidget(outp))
+
+#    def add(self, widget):
+#        if isinstance(widget,
+
+    def guifor(self, component):
+        for widget in self._widgets:
+            res = widget.guifor(component)
+            if res != None:
+                return res
+        return None
 
     def layout(self):
         inptcount = 0
         outpcount = 0
         x, y = self._position
         w, h = self._dimension
-        for comp in self._components:
-            if isinstance(comp, InputGUI):
-                comp._position = (x + 5, y + 5 + inptcount * 15)
+        for widget in self._widgets:
+            if isinstance(widget, InputWidget):
+                widget._position = (x + 5, y + 5 + inptcount * 15)
                 inptcount += 1
-            if isinstance(comp, OutputGUI):
-                comp._position = (x + w - 15, y + 5 + outpcount * 15)
+            if isinstance(widget, OutputWidget):
+                widget._position = (x + w - 15, y + 5 + outpcount * 15)
                 outpcount += 1
     
     def paint(self, surface):
         rect = pygame.Rect(self._position, self._dimension)
-        pygame.gfxdraw.box(surface, rect, ComponentGUI._color_base)
-        pygame.gfxdraw.rectangle(surface, rect, ComponentGUI._color_frame)
+        pygame.gfxdraw.box(surface, rect, ComponentWidget._color_base)
+        pygame.gfxdraw.rectangle(surface, rect, ComponentWidget._color_frame)
         
         gui.container.Container.paint(self, surface)
         self.paintwires(surface)
 
-    def getComponentAt(self, point):
-        res = gui.container.Container.getComponentAt(self, point)
+    def get_widget_at(self, point):
+        res = gui.container.Container.get_widget_at(self, point)
         if res == None:
-            return gui.base.Component.getComponentAt(self, point)
+            return gui.widget.Widget.get_widget_at(self, point)
         else:
           return res
     
     def paintwires(self, surface):
-        for i, outp in enumerate(self._component.outputs):
-            if outp == None:
-                return
-            for i, inpt in enumerate(outp._inputs):
-                if inpt in ComponentGUI._mapping:
-                    other = ComponentGUI._mapping[inpt]
-                    pygame.gfxdraw.line(surface, self._position[0] + self._dimension[0] - 15, self._position[1] + 5 + i * 15, \
-                        other._position[0] + 5, other._position[1] + 5 + i * 15, (255, 255, 255))
+        for i, widget in enumerate(self._widgets):
+            if isinstance(widget, OutputWidget):
+                fx, fy = widget._position
+                #for i, inpt in enumerate(outp._output._inputs):
+                #    tx, ty = inpt._position
+                #    pygame.gfxdraw.line(surface, fx, fy, tx, ty, (255, 255, 255))
 
-    def mouseMoved(self, pos, rel):
+    def mouse_moved(self, pos, rel):
         if self._dragging:
             self._position = (self._position[0] + rel[0], self._position[1] + rel[1])
             self.layout()
-    def mousePressed(self, pos):
+    def mouse_pressed(self, pos):
         self._dragging = True
     
-    def mouseReleased(self, pos):
+    def mouse_released(self, pos):
         self._dragging = False
 

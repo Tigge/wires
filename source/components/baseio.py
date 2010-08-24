@@ -6,8 +6,9 @@ class Output:
     """
     Base output
     """
-    def __init__(self):
-        self._inputs = []
+    def __init__(self, component):
+        self._component = component
+        self._inputs    = []
     
     def connect(self, inpt):
         if inpt not in self._inputs and inpt._output == None:
@@ -29,7 +30,8 @@ class Input:
     """
     readylist = {}
 
-    def __init__(self):
+    def __init__(self, component):
+        self._component = component
         self._output = None
         pass
         

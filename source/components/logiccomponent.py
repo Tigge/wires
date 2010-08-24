@@ -11,12 +11,11 @@ class Source(basecomponent.Component):
     in the game but is nice for debugging.
     """
     def __init__(self, sourceval):
-        basecomponent.Component.__init__(self, inputs = [], outputs = [wireio.WireOutput()])
+        basecomponent.Component.__init__(self, [], [wireio.WireOutput(self)])
         self._value = sourceval
 
     def calculate(self):
         self.outputs[0].send(self._value)
-
 
 class AndComponent(basecomponent.Component):
     """
@@ -25,8 +24,8 @@ class AndComponent(basecomponent.Component):
     """
     def __init__(self):
         basecomponent.Component.__init__(self, \
-        [wireio.WireInput(), wireio.WireInput()], \
-        [wireio.WireOutput()])
+                [wireio.WireInput(self), wireio.WireInput(self)], \
+                [wireio.WireOutput(self)])
 
     def calculate(self):
         i1 = self.inputs[0].value()

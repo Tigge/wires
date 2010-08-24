@@ -2,7 +2,7 @@ import sys, pygame, pygame.gfxdraw, pygame.locals
 
 import components.logiccomponent
 import components.lightcomponent
-import gui.base, gui.component, gui.container, guicomponent
+import gui.widget, gui.movablewidget, gui.container, componentwidget
             
 
 pygame.init()
@@ -14,13 +14,12 @@ icon = pygame.image.load("resources/icon.png")
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Wirez")
 
-background      = pygame.image.load("resources/background.png")
-sidepanel       = pygame.image.load("resources/sidepanel.png")
-left_fold_arrow = pygame.image.load("resources/left_fold_arrow.png")
-toppanel        = pygame.image.load("resources/toppanel.png")
+screen = pygame.display.set_mode(size, pygame.DOUBLEBUF)
 
-
-screen = pygame.display.set_mode(size)
+background      = pygame.image.load("resources/background.png").convert()
+sidepanel       = pygame.image.load("resources/sidepanel.png").convert()
+left_fold_arrow = pygame.image.load("resources/left_fold_arrow.png").convert()
+toppanel        = pygame.image.load("resources/toppanel.png").convert()
 
 s1 = components.logiccomponent.Source(True)
 s2 = components.logiccomponent.Source(True)
@@ -35,9 +34,11 @@ ac.outputs[0].connect(light.inputs[0])
 
 comps = [s1, s2, ac, light]
 
-guicomps = [guicomponent.ComponentGUI(s1), guicomponent.ComponentGUI(s2), \
-            guicomponent.ComponentGUI(ac), guicomponent.ComponentGUI(light), \
-            gui.component.MovableComponent()]
+guicomps = [componentwidget.ComponentWidget(s1), \
+            componentwidget.ComponentWidget(s2), \
+            componentwidget.ComponentWidget(ac), \
+            componentwidget.ComponentWidget(light), \
+            gui.movablewidget.MovableWidget()]
 
 
 font = pygame.font.Font(pygame.font.get_default_font(), 16)
@@ -45,7 +46,7 @@ fps  = pygame.time.Clock()
 container = gui.container.Container()
 for gc in guicomps:
     container.add(gc)
-gui  = gui.base.GUI(container)
+gui  = gui.GUI(container)
 while 1:
     fps.tick()
     for event in pygame.event.get():
@@ -53,21 +54,21 @@ while 1:
         else: 
             #print event
             gui.update(event)
-    screen.fill(black)
+    #screen.fill(black)
     screen.blit(background, (0, 0))
     screen.blit(toppanel, (0,0))
     screen.blit(sidepanel, (575, 0))
     screen.blit(left_fold_arrow, (580, 250))
 
-
-    fs = font.render("FPS: " + str(int(fps.get_fps())), True, (255, 255, 255))
-    screen.blit(fs, (10, 10))
+    
+    fs = font.render("FPS: " + str(int(fps.get_fps())), True, (0, 0, 0))
+    screen.blit(fs.convert_alpha(), (10, 10))
 
     for i, guicomp in enumerate(guicomps):
         guicomp.paint(screen)
     
     gui.paint(screen)
     
-    pygame.display.flip()
+    pygame.display.update()
 
     
