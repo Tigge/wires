@@ -2,7 +2,8 @@ import sys, pygame, pygame.gfxdraw, pygame.locals
 
 import components.logiccomponent
 import components.lightcomponent
-import gui.widget, gui.movablewidget, gui.container, componentwidget
+import gui.widget, gui.movablewidget, gui.container
+import componentsgui.componentwidget
             
 
 pygame.init()
@@ -21,6 +22,9 @@ sidepanel       = pygame.image.load("resources/sidepanel.png").convert()
 left_fold_arrow = pygame.image.load("resources/left_fold_arrow.png").convert()
 toppanel        = pygame.image.load("resources/toppanel.png").convert()
 
+
+# Set up components:
+
 s1 = components.logiccomponent.Source(True)
 s2 = components.logiccomponent.Source(True)
 
@@ -34,19 +38,15 @@ ac.outputs[0].connect(light.inputs[0])
 
 comps = [s1, s2, ac, light]
 
-guicomps = [componentwidget.ComponentWidget(s1), \
-            componentwidget.ComponentWidget(s2), \
-            componentwidget.ComponentWidget(ac), \
-            componentwidget.ComponentWidget(light), \
-            gui.movablewidget.MovableWidget()]
+# Set up components gui
+container = componentsgui.ComponentGUI(comps) 
+gui  = gui.GUI(container)
 
+# Init resources
 
 font = pygame.font.Font(pygame.font.get_default_font(), 16)
 fps  = pygame.time.Clock()
-container = gui.container.Container()
-for gc in guicomps:
-    container.add(gc)
-gui  = gui.GUI(container)
+
 while 1:
     fps.tick()
     for event in pygame.event.get():
@@ -64,9 +64,6 @@ while 1:
     fs = font.render("FPS: " + str(int(fps.get_fps())), True, (0, 0, 0))
     screen.blit(fs.convert_alpha(), (10, 10))
 
-    for i, guicomp in enumerate(guicomps):
-        guicomp.paint(screen)
-    
     gui.paint(screen)
     
     pygame.display.update()

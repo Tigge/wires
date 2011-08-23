@@ -14,6 +14,7 @@ class ConnectionWidget(gui.widget.Widget, gui.event.MouseListener):
         pygame.gfxdraw.box(surface, rect, self._color)
         
         if self._mousedown:
+            print "conwidget: mousedown"
             fx, fy = self._position
             tx, ty = self._wirepos
             pygame.gfxdraw.line(surface, fx, fy, tx, ty, (255, 255, 255))
@@ -28,16 +29,17 @@ class ConnectionWidget(gui.widget.Widget, gui.event.MouseListener):
     def wiredroplegal(self, comp):
         return True
     
-    def mouseMoved(self, pos, rel):
+    def mouse_moved(self, pos, rel):
         if self._mousedown:
             self._wirepos = pos
             self.wiredrag(pos)
-    def mousePressed(self, pos):
+    def mouse_pressed(self, pos):
+        print "conwidget: mousepressed", pos
         self._mousedown = True
         self._wirepos   = pos
-    def mouseReleased(self, pos):
+    def mouse_released(self, pos):
         self._mousedown = False
-        comp = self._parent._parent.getComponentAt(pos)
+        comp = self._parent._parent.get_widget_at(pos)
         if self.wiredroplegal(comp):
             self.wiredrop(comp)
 
@@ -76,10 +78,13 @@ class ComponentWidget(gui.container.Container, gui.event.MouseListener):
         self._component = comp
         self._dragging  = False        
         for inpt in comp.inputs:
-            ComponentWidget._mapping[inpt] = self
-            self.add(InputWidget(inpt))
+            iw = InputWidget(inpt)
+            ComponentWidget._mapping[inpt] = iw
+            self.add(iw)
         for outp in comp.outputs:
-            self.add(OutputWidget(outp))
+            ow = OutputWidget(outp)
+            ComponentWidget._mapping[outp] = ow
+            self.add(ow)
 
 #    def add(self, widget):
 #        if isinstance(widget,
@@ -120,12 +125,17 @@ class ComponentWidget(gui.container.Container, gui.event.MouseListener):
           return res
     
     def paintwires(self, surface):
-        for i, widget in enumerate(self._widgets):
-            if isinstance(widget, OutputWidget):
-                fx, fy = widget._position
-                #for i, inpt in enumerate(outp._output._inputs):
-                #    tx, ty = inpt._position
-                #    pygame.gfxdraw.line(surface, fx, fy, tx, ty, (255, 255, 255))
+        return
+#        for i, widget in enumerate(self._widgets):
+#            if isinstance(widget, OutputWidget):
+#                fx, fy = widget._position
+#                #print "draw for output widget: ", widget, widget._output
+#                if widget._output != None:
+#                    for j, inpt in enumerate(widget._output._inputs):
+#                        tx, ty = ComponentWidget._mapping[inpt]._position
+#                        #pygame.gfxdraw.line(surface, fx, fy, tx, ty, (255, 255, 255))
+#                        xdiff = max((tx - fx) / 1.5, 50)
+#                        pygame.gfxdraw.bezier(surface, [(fx, fy), (fx + xdiff, fy), (tx - xdiff, ty), (tx, ty)], 3, (255, 255, 255))
 
     def mouse_moved(self, pos, rel):
         if self._dragging:
